@@ -1,11 +1,14 @@
 local initialize = require("init")
 local Camera = require("engine/camera")
 
-
-
 local offset = 32
 local W, H = love.graphics.getDimensions()
 -- gets dimensions of game window
+
+player = {}
+player.x = 50
+player.y = 50
+player.speed = 20
 
 local function resizeCamera( self, w, h )
 	local scaleW, scaleH = w / self.w, h / self.h
@@ -40,6 +43,9 @@ far = levelCam:addLayer( 'far', .5 )
 
 function love.load()
   configExists = initialize.loadConfig()
+  if configExists == true then print("Configuration file loaded.")
+  else print("Configuration file not found, a new one was created.")
+  end
 end
 
 
@@ -50,10 +56,10 @@ function love.update(dt)
   local moveSpeed = 300 / levelCam.scale
   if love.keyboard.isDown( 'q' ) then levelCam:rotate( math.pi * dt ) end
 	if love.keyboard.isDown( 'e' ) then levelCam:rotate( -math.pi * dt ) end
-	if love.keyboard.isDown( 'w' ) then levelCam:translate( 0, -moveSpeed * dt ) end
-	if love.keyboard.isDown( 's' ) then levelCam:translate( 0, moveSpeed * dt ) end
-	if love.keyboard.isDown( 'a' ) then levelCam:translate( -moveSpeed * dt, 0 ) end
-	if love.keyboard.isDown( 'd' ) then levelCam:translate( moveSpeed * dt, 0 ) end
+	if love.keyboard.isDown( 'w' ) then player.y = player.y - (player.speed * dt) end--levelCam:translate( 0, -moveSpeed * dt ) end
+	if love.keyboard.isDown( 's' ) then player.y = player.y + (player.speed * dt) end--levelCam:translate( 0, moveSpeed * dt ) end
+	if love.keyboard.isDown( 'a' ) then player.x = player.x - (player.speed * dt) end--levelCam:translate( -moveSpeed * dt, 0 ) end
+	if love.keyboard.isDown( 'd' ) then player.x = player.x + (player.speed * dt) end--levelCam:translate( moveSpeed * dt, 0 ) end
 end
 
 function love.keyreleased( key ) --press escape to quit
@@ -76,7 +82,7 @@ function love.draw()
   	levelCam:pop('far')
     levelCam:push('middle')
       love.graphics.setColor( 0, 255, 0)
-      love.graphics.rectangle( 'fill', -32, -32, 64, 64 )
+      love.graphics.rectangle( 'fill', player.x, player.y, 64, 64 )
     levelCam:pop('middle')
     levelCam:push('close')
       love.graphics.setColor( 0, 0, 255)
